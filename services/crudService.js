@@ -76,6 +76,8 @@ class CrudService {
   }
 }
 
+// todo camaros es manco
+
 module.exports = CrudService;
 
 // async findInRange(filterby, minValueQuery, maxValueQuery) {
