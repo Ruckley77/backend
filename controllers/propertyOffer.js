@@ -1,10 +1,12 @@
 const PropertyOfferCrudService = require('../services/propertyOfferService');
 
 const propertyOfferCrudService = new PropertyOfferCrudService();
+const { randomUUID } = require('crypto');
+const randomPOID = randomUUID();
 
 async function createPropertyOffer(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, randomPOID };
     const newPropertyOffer = await propertyOfferCrudService.create(data);
     res.status(201).json(newPropertyOffer);
   } catch (error) {

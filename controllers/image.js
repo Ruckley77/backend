@@ -5,6 +5,9 @@ const PropertyCrudService = require('../services/propertyService');
 const imageCrudService = new ImageCrudService();
 const propertyCrudService = new PropertyCrudService();
 
+const { randomUUID } = require('crypto');
+const randomIID = randomUUID();
+
 async function createImage(req, res) {
   const file = {
     type: req.file.mimetype,
@@ -19,6 +22,7 @@ async function createImage(req, res) {
       ...req.body,
       imageURL: URL,
       imageName,
+      imageId: randomIID,
     };
     const foundProperty = await propertyCrudService.readById(data.propertyId);
     if (!foundProperty) return res.status(404).json('cant find propertyId');

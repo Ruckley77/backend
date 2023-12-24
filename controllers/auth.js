@@ -1,15 +1,15 @@
 const jwt = require('../utils/jwt');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const { randomUUID } = require('crypto');
 
 const UserCrudService = require('../services/userService');
 const userCrudService = new UserCrudService();
+const { randomUUID } = require('crypto');
+const randomUID = randomUUID();
 
 async function registerUser(req, res) {
   try {
     const { userName, name, email, password, userTypeId } = req.body;
-    const randomUID = randomUUID();
     const userData = {
       userName,
       name,

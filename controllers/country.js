@@ -2,9 +2,12 @@ const CountryCrudService = require('../services/countryService');
 
 const countryCrudService = new CountryCrudService();
 
+const { randomUUID } = require('crypto');
+const randomCID = randomUUID();
+
 async function createCountry(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, countryId: randomCID };
     const newCountry = await countryCrudService.create(data);
     res.status(201).json(newCountry);
   } catch (error) {

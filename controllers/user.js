@@ -1,15 +1,15 @@
 const bcrypt = require('bcryptjs');
-const { randomUUID } = require('crypto');
 
 const UserCrudService = require('../services/userService');
 const UserTypeIdCrudService = require('../services/userTypeService');
 const userCrudService = new UserCrudService();
 const userTypeIdCrudService = new UserTypeIdCrudService();
+const { randomUUID } = require('crypto');
+const randomUID = randomUUID();
 
 async function createUser(req, res) {
   try {
     const { userName, name, email, password, userTypeId } = req.body;
-    const randomUID = randomUUID();
     const data = {
       userName,
       name,

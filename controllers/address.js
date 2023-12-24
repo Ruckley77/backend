@@ -3,10 +3,12 @@ const CityCrudService = require('../services/cityService');
 
 const addressCrudService = new AddressCrudService();
 const cityCrudService = new CityCrudService();
+const { randomUUID } = require('crypto');
+const randomAID = randomUUID();
 
 async function createAddress(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, addressId: randomAID };
     const foundCity = await cityCrudService.readById(data.cityId);
     if (!foundCity) return res.status(404).json('cant find cityId');
     const newAddress = await addressCrudService.create(data);
@@ -49,9 +51,68 @@ async function deleteAddress(req, res) {
   }
 }
 
+async function lookupAddressCityStateCountry(req, res) {
+  const pipeline = [
+    {
+      $lookup: {
+        from: 'cities',
+        localField: 'addressId',
+        foreignField: 'cityId',
+        as: 'cityInformation',
+      },
+    },
+    {
+      $unwind: '$cityInformation',
+    },
+    {
+      $lookup: {
+        from: 'states',
+        localField: 'cityInformation.cityId',
+        foreignField: 'stateId',
+        as: 'stateInformation',
+      },
+    },
+    {
+      $unwind: '$stateInformation',
+    },
+    {
+      $lookup: {
+        from: 'countries',
+        localField: 'stateInformation.stateId',
+        foreignField: 'countryId',
+        as: 'countryInformation',
+      },
+    },
+    {
+      $unwind: '$countryInformation',
+    },
+    {
+      $project: {
+        _id: 0,
+        __v: 0,
+        cityInformation: {
+          _id: 0,
+          __v: 0,
+        },
+        stateInformation: {
+          _id: 0,
+          __v: 0,
+        },
+        countryInformation: {
+          _id: 0,
+          __v: 0,
+        },
+      },
+    },
+  ];
+  const aggregateAddress = await addressCrudService.aggregateOptions(pipeline);
+  res.status(200).json(aggregateAddress);
+}
+
 module.exports = {
   createAddress,
   readAddress,
   updateAddress,
   deleteAddress,
+  lookupAddressCityStateCountry,
 };

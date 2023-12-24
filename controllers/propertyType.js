@@ -1,10 +1,12 @@
 const PropertyTypeCrudService = require('../services/propertyTypeService');
 
 const propertyTypeCrudService = new PropertyTypeCrudService();
+const { randomUUID } = require('crypto');
+const randomPTID = randomUUID();
 
 async function createPropertyType(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, propertyTypeId: randomPTID };
     const newPropertyType = await propertyTypeCrudService.create(data);
     res.status(201).json(newPropertyType);
   } catch (error) {

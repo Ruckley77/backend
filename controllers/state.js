@@ -4,9 +4,12 @@ const CountryCrudService = require('../services/countryService');
 const stateCrudService = new StateCrudService();
 const countryCrudService = new CountryCrudService();
 
+const { randomUUID } = require('crypto');
+const randomSID = randomUUID();
+
 async function createState(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, stateId: randomSID };
     const foundCountry = await countryCrudService.readById(data.countryId);
     if (!foundCountry) return res.status(404).json('cant find countryId');
     const newState = await stateCrudService.create(data);
@@ -49,9 +52,38 @@ async function deleteState(req, res) {
   }
 }
 
+async function lookupStateCountry(req, res) {
+  const pipeline = [
+    {
+      $lookup: {
+        from: 'countries',
+        localField: 'stateId',
+        foreignField: 'countryId',
+        as: 'countryInformation',
+      },
+    },
+    {
+      $unwind: '$countryInformation',
+    },
+    {
+      $project: {
+        _id: 0,
+        __v: 0,
+        countryInformation: {
+          _id: 0,
+          __v: 0,
+        },
+      },
+    },
+  ];
+  const aggregateState = await stateCrudService.aggregateOptions(pipeline);
+  res.status(200).json(aggregateState);
+}
+
 module.exports = {
   createState,
   readState,
   updateState,
   deleteState,
+  lookupStateCountry,
 };

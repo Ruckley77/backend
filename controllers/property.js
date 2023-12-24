@@ -12,9 +12,12 @@ const propertyOfferCrudService = new PropertyOfferCrudService();
 const propertyTypeCrudService = new PropertyTypeCrudService();
 const userCrudService = new UserCrudService();
 
+const { randomUUID } = require('crypto');
+const randomPID = randomUUID();
+
 async function createProperty(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, propertyId: randomPID };
     const foundAddress = await addressCrudService.readById(data.addressId);
     const foundPropertyOffer = await propertyOfferCrudService.readById(
       data.propertyOfferId

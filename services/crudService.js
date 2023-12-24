@@ -74,9 +74,15 @@ class CrudService {
   catch(error) {
     throw new Error(`${error}`);
   }
-}
 
-// todo camaros es manco
+  async aggregateOptions(pipeline) {
+    try {
+      return await this.model.aggregate(pipeline).exec();
+    } catch (error) {
+      throw new Error(`${error}`);
+    }
+  }
+}
 
 module.exports = CrudService;
 

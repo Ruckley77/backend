@@ -1,10 +1,12 @@
 const UserTypeCrudService = require('../services/userTypeService');
 
 const userTypeCrudService = new UserTypeCrudService();
+const { randomUUID } = require('crypto');
+const randomUTID = randomUUID();
 
 async function createUserType(req, res) {
   try {
-    const data = req.body;
+    const data = { ...req.body, userTypeId: randomUTID };
     const newUserType = await userTypeCrudService.create(data);
     res.status(201).json(newUserType);
   } catch (error) {
